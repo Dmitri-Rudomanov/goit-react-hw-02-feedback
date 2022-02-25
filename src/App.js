@@ -1,13 +1,9 @@
 import React, { Component } from 'react';
-// import shortid from 'shortid';
-// import ColorPicker from './components/ColorPicker';
-// import Counter from './components/Counter';
-// import Container from './components/Container';
-// import TodoList from './components/TodoList';
-// import TodoEditor from './components/TodoEditor';
-// import Filter from './components/Filter';
-// import Form from './components/Form';
-// import initialTodos from './todos.json';
+import Statistics from './components/Statistics/Statistics';
+import Section from './components/Section/Section';
+import FeedbackOptions from './components/FeedbackOptions/FeedbackOptions';
+import Notification from './components/Notification/Notification';
+
 
 class App extends Component {
   state = {
@@ -16,20 +12,11 @@ class App extends Component {
     bad: 0
   };
 
-  handleGoodChange = () => { 
-    this.setState({
-      good:this.state.good+1
-    })
-  }
-  handleNeutralChange = () => { 
-    this.setState({
-      neutral:this.state.neutral+1
-    })
-  }
-  handleBadChange = () => { 
-    this.setState({
-      bad:this.state.bad+1
-    })
+  onLeaveFeedback=(e)=>{
+    const name=e.target.name
+    this.setState((prevState)=>({
+      [name]:prevState[name]+1
+      }))
   }
 
   countTotalFeedback = () => { 
@@ -39,30 +26,31 @@ class App extends Component {
   }
 
   countPositiveFeedbackPercentage = () => { 
-    return Math.round((this.state.good/this.countTotalFeedback())*100)
+    const count=Math.round((this.state.good/this.countTotalFeedback())*100)
+    const countCheck=isNaN(count)?"0":count
+    return countCheck
   }
 
 
   render() {
-
+    const options=Object.keys(this.state)
 
     return (
       <div>
-        <h1>Please leave feedback</h1>
-
-        <div>
-          <button type='button' onClick={this.handleGoodChange}>Good</button>
-          <button type='button' onClick={this.handleNeutralChange}>Neutral</button>
-          <button type='button' onClick={this.handleBadChange}>Bad</button>
-        </div>
-        <h2>Statistics</h2>
-        <ul>
-          <li>Good: {this.state.good}</li>
-          <li>Neutral: {this.state.neutral}</li>
-          <li>Bad: {this.state.bad}</li>
-          <li>Total: {this.countTotalFeedback()}</li>
-          <li>Positive feedback: {isNaN(this.countPositiveFeedbackPercentage())?"0":this.countPositiveFeedbackPercentage()}%</li>
-        </ul>
+        <Section title="Please leave feedback">
+        <FeedbackOptions options={options} onLeaveFeedback={this.onLeaveFeedback}/>
+        </Section>
+        
+        {this.countTotalFeedback()===0
+        ?<Notification message="No feedback given"/>
+        :<Section title="Statistics">
+        <Statistics
+         good={this.state.good}
+          neutral={this.state.neutral}
+          bad={this.state.bad}
+          total={this.countTotalFeedback()}
+          positivePrecentage={this.countPositiveFeedbackPercentage()}/>
+        </Section>}
       </div>
     )
 
@@ -70,12 +58,3 @@ class App extends Component {
 }
 
 export default App;
-
-// const colorPickerOptions = [
-//   { label: 'red', color: '#F44336' },
-//   { label: 'green', color: '#4CAF50' },
-//   { label: 'blue', color: '#2196F3' },
-//   { label: 'grey', color: '#607D8B' },
-//   { label: 'pink', color: '#E91E63' },
-//   { label: 'indigo', color: '#3F51B5' },
-// ];
